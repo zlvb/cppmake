@@ -1,4 +1,4 @@
+add:inc.txt,inc.txt
 src:./dir1, ./dir2
-inc:./include
 tmp:./build
 out:./bin/app

@@ -1,18 +1,13 @@
 # Makefile
-#
-# usage :
-#     make
-#     make BUILD=release
-#	  make clean
-#
 
 LIBPATH = -L./
 INC = -I./include
 LIBS = -lpthread
 TARGET_BIN = "./bin/app"
+TARGET_PATH = "./bin"
 COMMFLAG = -pipe -Wall -Wno-trigraphs -Werror
-CXX = ccache g++ -std=gnu++1y
-CC = ccache gcc -std=c11
+CXX = g++ -std=gnu++1y
+CC = gcc -std=c11
 
 CXXFLAGS = $(COMMFLAG) -g3 -ggdb3 -O0 -D_DEBUG
 OBJPATH = ./build/
@@ -26,13 +21,12 @@ clean :
 .PHONY: clean
 
 
-AllDirs := $(shell ls -R ./dir1 | grep '^\./.*:$$' | awk '{gsub(":","");print}') $(shell ls -R ./dir2 | grep '^\./.*:$$' | awk '{gsub(":","");print}')
-$(warning $(AllDirs))
+AllDirs := $(shell ls -R ./dir1|grep '^\./.*:$$'|awk '{gsub(":","");print}') $(shell ls -R ./dir2|grep '^\./.*:$$'|awk '{gsub(":","");print}') $(shell ls -R ./include|grep '^\./.*:$$'|awk '{gsub(":","");print}')
 SRCS_LIB := $(foreach n,$(AllDirs) , $(wildcard $(n)/*.cpp))
 SRCS_LIB_C := $(foreach n,$(AllDirs) , $(wildcard $(n)/*.c))
 SRCS_LIB_CC := $(foreach n,$(AllDirs) , $(wildcard $(n)/*.cc))
 OBJS_BIN = $(SRCS_LIB:%.cpp=$(OBJPATH)/%.o) $(SRCS_LIB_C:%.c=$(OBJPATH)/%.o) $(SRCS_LIB_CC:%.cc=$(OBJPATH)/%.o)
-$(warning $(OBJS_BIN))
+#$(warning $(OBJS_BIN))
 
 ifneq "$(MAKECMDGOALS)" "clean"
 -include $(SRCS_LIB:%.cpp=$(OBJPATH)/%.d)
@@ -41,6 +35,7 @@ ifneq "$(MAKECMDGOALS)" "clean"
 endif
 
 $(TARGET_BIN) : $(OBJS_BIN)
+	@mkdir -p $(TARGET_PATH)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 $(OBJPATH)/%.o : %.cpp
