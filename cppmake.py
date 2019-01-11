@@ -6,9 +6,9 @@ import sys
 
 TEMPL = '''# Makefile
 
-LIBPATH = -L./
+LIBPATH = {libp}
 INC = {inc}
-LIBS = -lpthread
+LIBS = {lib}
 TARGET_BIN = "{out}"
 TARGET_PATH = "{__oup}"
 COMMFLAG = -pipe -Wall -Wno-trigraphs -Werror
@@ -77,7 +77,9 @@ $(OBJPATH)/%.d : %.cc
 '''
 
 dirtempl = r'''$(shell ls -R %s|grep '^\./.*:$$'|awk '{gsub(":","");print}')'''
-inctempl = '''-I%s'''
+inctempl = '-I%s'
+libptempl = '-L%s'
+libtempl = '-l%s'
 deftempl = '%s'
 
 src = []
@@ -95,6 +97,8 @@ templ_table = (
     ('out', deftempl, out, 1),
     ('add', deftempl, import_files, 0),
     ('__oup', deftempl, outpath, 1),
+    ('lib', deftempl, libtempl, 0),
+    ('libp', deftempl, libptempl, 0),
 )
 
 proced_files = set()

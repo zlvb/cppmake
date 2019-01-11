@@ -2,3 +2,5 @@ add:inc.txt,inc.txt
 src:./dir1, ./dir2
 tmp:./build
 out:./bin/app
+libp:./
+lib:pthread
