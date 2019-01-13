@@ -3,4 +3,9 @@ src:./dir1, ./dir2
 tmp:./build
 out:./bin/app
 libp:./
-lib:pthread
+lib:pthread,lz4,unwind-x86_64,unwind,protobuf 
+CXX:g++ -std=gnu++1y
+CC:gcc -std=c11
+CXXFLAGS:-pipe -Wall -Wno-trigraphs -Werror -g3 -ggdb3 -O0 -D_DEBUG -Wno-unused-parameter
+CFLAGS:-pipe -Wall -Wno-trigraphs -Werror -g3 -ggdb3 -O0 -D_DEBUG -Wno-unused-parameter
+LDFLAGS:`mysql_config --cflags --libs`
