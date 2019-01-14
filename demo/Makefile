@@ -9,9 +9,10 @@ TARGET_PATH = "./bin"
 CXX = g++ -std=gnu++1y
 CC = gcc -std=c11
 
-CXXFLAGS = -pipe -Wall -Wno-trigraphs -Werror -Wextra -Wno-unused-parameter -g3 -ggdb3 -O0 -D_DEBUG -pipe -Wall -Wno-trigraphs -Werror -g3 -ggdb3 -O0 -D_DEBUG -Wno-unused-parameter
-CFLAGS = -pipe -Wall -Wno-trigraphs -Werror -Wextra -Wno-unused-parameter -g3 -ggdb3 -O0 -D_DEBUG -pipe -Wall -Wno-trigraphs -Werror -g3 -ggdb3 -O0 -D_DEBUG -Wno-unused-parameter
+CXXFLAGS = -pipe -Wall -Wno-trigraphs -Werror -Wno-unused-parameter -g3 -ggdb3 -O0 -D_DEBUG
+CFLAGS = -pipe -Wall -Wno-trigraphs -Werror -Wno-unused-parameter -g3 -ggdb3 -O0 -D_DEBUG
 OBJPATH = ./build/
+LDFLAGS = `mysql_config --cflags --libs`
 
 all : $(TARGET_BIN)
 
@@ -37,35 +38,35 @@ endif
 
 $(TARGET_BIN) : $(OBJS_BIN)
 	@mkdir -p $(TARGET_PATH)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
+	@$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS) $(LDFLAGS)
+	@echo $(TARGET_BIN)
+    
 
 $(OBJPATH)/%.o : %.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INC) -o $@ -c $<
+	@$(CXX) $(CXXFLAGS) $(INC) -o $@ -c $<
+	@echo $<
 
 $(OBJPATH)/%.d : %.cpp
-	@echo $(CXX) -MM -o $@ -c $<
 	@rm -f $@
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -pipe $(INC) -MM -MT '$@ $(basename $@).o' $< -o $@
+	@$(CXX) $(CXXFLAGS) -pipe $(INC) -MM -MT '$@ $(basename $@).o' $< -o $@
 
 $(OBJPATH)/%.o : %.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INC) -o $@ -c $<
+	@$(CC) $(CFLAGS) $(INC) -o $@ -c $<
 
 $(OBJPATH)/%.d : %.c
-	@echo $(CC) -MM -o $@ -c $<
 	@rm -f $@
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -pipe $(INC) -MM -MT '$@ $(basename $@).o' $< -o $@
+	@$(CC) $(CFLAGS) -pipe $(INC) -MM -MT '$@ $(basename $@).o' $< -o $@
 
 $(OBJPATH)/%.o : %.cc
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INC) -o $@ -c $<
+	@$(CXX) $(CXXFLAGS) $(INC) -o $@ -c $<
 
 $(OBJPATH)/%.d : %.cc
-	@echo $(CC) -MM -o $@ -c $<
 	@rm -f $@
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -pipe $(INC) -MM -MT '$@ $(basename $@).o' $< -o $@
+	@$(CXX) $(CXXFLAGS) -pipe $(INC) -MM -MT '$@ $(basename $@).o' $< -o $@
 

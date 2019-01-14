@@ -99,7 +99,7 @@ LDFLAGS = []
 
 cxx_use_default_flags = True
 c_use_default_flags = True
-
+compile_mode = 'debug'
 import_files = []
 
 templ_table = (
@@ -124,12 +124,18 @@ templ_map = {}
 for tr in templ_table: 
     templ_map[tr[0]+':'] = (len(tr[0])+1, tr[1], tr[2])
 
+ACTIVE = False
 
 def getfilename():
     if len(sys.argv) == 1:
-        return "cppmake.txt"
+        return "cppmake.txt", "debug"
     elif len(sys.argv) == 2:
-        return sys.argv[1]
+        if os.path.exists(sys.argv[1]):
+            return sys.argv[1], "debug"
+        else:
+            return "cppmake.txt", sys.argv[1]
+    elif len(sys.argv) == 3:
+        return sys.argv[1], sys.argv[2]
     else:
         quit()
 
@@ -154,13 +160,21 @@ def replaceTempl(templ, flag, arr):
 
 
 def getparam(line):
+    global ACTIVE
     line = line.strip()
-    for k, v in templ_map.items():
-        kl, tmpl, arr = v
-        key = line[:kl]
-        if key == k:
-            #print(key, k, tmpl, arr)
-            addtoArr(key, arr, tmpl, line[kl:])
+    if not line:
+        return
+    if line == '[global]' or line == ('[%s]' % compile_mode):
+        ACTIVE = True
+    elif line[0] == '[' and line[-1:] == ']':
+        ACTIVE = False    
+    elif ACTIVE:
+        for k, v in templ_map.items():
+            kl, tmpl, arr = v
+            key = line[:kl]
+            if key == k:
+                #print(key, k, tmpl, arr)
+                addtoArr(key, arr, tmpl, line[kl:])
 
 def proc_cppmake(fn):
     if fn in proced_files:
@@ -184,14 +198,17 @@ def proc_cppmake(fn):
     proc_import()
 
 def proc_import():
+    global ACTIVE
     global import_files
     temp = import_files
     import_files = []
     
     while True:
         for fn in temp:
-            #print('proc import %s' % fn)
+            ac = ACTIVE
+            ACTIVE = True
             proc_cppmake(fn)
+            ACTIVE = ac
         if not import_files:
             break
 
@@ -214,8 +231,12 @@ def export_Makefile():
     fd.write(result)
     fd.close()
 
-if __name__ == "__main__":
-    fn = getfilename()
+def main():
+    global compile_mode
+    fn, compile_mode = getfilename()
     proc_cppmake(fn)
     proc_something()
     export_Makefile()
+
+if __name__ == "__main__":
+    main()
