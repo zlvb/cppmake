@@ -164,7 +164,7 @@ def getparam(line):
     line = line.strip()
     if not line:
         return
-    if line == '[global]' or line == ('[%s]' % compile_mode):
+    if line.lower() == '[global]' or line.lower() == ('[%s]' % compile_mode):
         ACTIVE = True
     elif line[0] == '[' and line[-1:] == ']':
         ACTIVE = False    
@@ -234,6 +234,7 @@ def export_Makefile():
 def main():
     global compile_mode
     fn, compile_mode = getfilename()
+    compile_mode = compile_mode.lower()
     proc_cppmake(fn)
     proc_something()
     export_Makefile()
