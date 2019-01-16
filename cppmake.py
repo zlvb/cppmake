@@ -124,7 +124,7 @@ templ_map = {}
 for tr in templ_table: 
     templ_map[tr[0]+':'] = (len(tr[0])+1, tr[1], tr[2])
 
-ACTIVE = False
+ACTIVE = True
 
 def getfilename():
     if len(sys.argv) == 1:
